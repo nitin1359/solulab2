@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:solulab2/cart.dart';
-import 'package:solulab2/homepage.dart';
-import 'package:solulab2/notification.dart';
-import 'package:solulab2/profile.dart';
+import 'package:solulab2/navigation%20screens/cart.dart';
+import 'package:solulab2/navigation%20screens/homepage.dart';
+import 'package:solulab2/navigation%20screens/notification.dart';
+import 'package:solulab2/navigation%20screens/profile.dart';
 
 class BottomNavController extends GetxController {
   RxInt currentIndex = 0.obs;
