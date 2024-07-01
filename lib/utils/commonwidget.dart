@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:solulab2/services/restaurant.dart';
 
 Widget assign2TextField({
   required String text,
@@ -68,5 +70,88 @@ Widget filterButton() {
       onPressed: () {},
       icon: Image.asset('assets/images/filter_icon.png'),
     ),
+  );
+}
+
+Widget nearestRestaurant() {
+  return StreamBuilder(
+    stream: FirebaseFirestore.instance.collection('restaurants').snapshots(),
+    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      if (snapshot.hasError) {
+        return const Text('Something went wrong');
+      }
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const CircularProgressIndicator();
+      }
+
+      final List<Restaurant> restaurants = snapshot.data!.docs.map(
+        (doc) {
+          return Restaurant.fromFirestore(doc);
+        },
+      ).toList();
+
+      return SizedBox(
+        height: 200,
+        child: GridView.builder(
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: snapshot.data?.size ?? 0,
+          //  snapshot.data?.size ?? 0, - this is also same
+          // for all list length we can use restaurants.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 1,
+            mainAxisSpacing: 20,
+            crossAxisSpacing: 20.0,
+            childAspectRatio: 147 / 184,
+          ),
+          itemBuilder: (context, index) {
+            final restaurant = restaurants[index];
+            return Container(
+              width: 147,
+              height: 184,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    margin: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(restaurant.imageUrl),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    restaurant.name,
+                    style: const TextStyle(
+                      fontFamily: 'Bentonsans_Bold',
+                      fontSize: 16.0,
+                      color: Color(0xFF22242E),
+                    ),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    '${restaurant.deliveryTime} Mins',
+                    style: const TextStyle(
+                      fontFamily: 'Bentonsans_Book',
+                      fontSize: 13.0,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    },
   );
 }

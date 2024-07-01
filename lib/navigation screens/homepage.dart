@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:solulab2/utils/commonwidget.dart';
 
@@ -71,6 +70,14 @@ class Homepage extends StatelessWidget {
                         ),
                       ],
                     ),
+                    SizedBox(height: 20.0),
+                    nearestRestaurant(),
+                    SizedBox(height: 20.0),
+                    assign2TextField(
+                        text: 'Popular Menu',
+                        fontFamily: 'Bentonsans_Bold',
+                        fontSize: 15.0),
+                    SizedBox(height: 20.0),
                   ],
                 ),
               ),
