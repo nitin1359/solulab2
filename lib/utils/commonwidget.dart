@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:solulab2/detail%20screen/filter_screen.dart';
+import 'package:solulab2/services/menu.dart';
 import 'package:solulab2/services/restaurant.dart';
 
 Widget assign2TextField({
@@ -67,7 +70,9 @@ Widget filterButton() {
       borderRadius: BorderRadius.circular(15.0),
     ),
     child: IconButton(
-      onPressed: () {},
+      onPressed: () {
+        Get.to(() => const FilterScreen());
+      },
       icon: Image.asset('assets/images/filter_icon.png'),
     ),
   );
@@ -93,64 +98,225 @@ Widget nearestRestaurant() {
 
       return SizedBox(
         height: 200,
-        child: GridView.builder(
+        child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
           itemCount: snapshot.data?.size ?? 0,
-          //  snapshot.data?.size ?? 0, - this is also same
-          // for all list length we can use restaurants.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 20,
-            childAspectRatio: 147 / 184,
-          ),
           itemBuilder: (context, index) {
             final restaurant = restaurants[index];
-            return Container(
-              width: 147,
-              height: 184,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(22.0),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    margin: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(restaurant.imageUrl),
-                        fit: BoxFit.cover,
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: 147,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22.0),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 90,
+                      height: 90,
+                      margin: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(restaurant.imageUrl),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    restaurant.name,
-                    style: const TextStyle(
-                      fontFamily: 'Bentonsans_Bold',
-                      fontSize: 16.0,
-                      color: Color(0xFF22242E),
+                    Text(
+                      restaurant.name,
+                      style: const TextStyle(
+                        fontFamily: 'Bentonsans_Bold',
+                        fontSize: 16.0,
+                        color: Color(0xFF22242E),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    '${restaurant.deliveryTime} Mins',
-                    style: const TextStyle(
-                      fontFamily: 'Bentonsans_Book',
-                      fontSize: 13.0,
-                      color: Colors.grey,
+                    const SizedBox(height: 4.0),
+                    Text(
+                      '${restaurant.deliveryTime} Mins',
+                      style: const TextStyle(
+                        fontFamily: 'Bentonsans_Book',
+                        fontSize: 13.0,
+                        color: Color(0xFF22242E),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
         ),
+      );
+    },
+  );
+}
+
+Widget popularRestaurant() {
+  return StreamBuilder(
+    stream: FirebaseFirestore.instance.collection('restaurants').snapshots(),
+    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      if (snapshot.hasError) {
+        return const Text('Something went wrong');
+      }
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const CircularProgressIndicator();
+      }
+
+      final List<Restaurant> restaurants = snapshot.data!.docs.map(
+        (doc) {
+          return Restaurant.fromFirestore(doc);
+        },
+      ).toList();
+
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: const ClampingScrollPhysics(),
+        itemCount: snapshot.data?.size ?? 0,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 20,
+          crossAxisSpacing: 20,
+        ),
+        itemBuilder: (context, index) {
+          final restaurant = restaurants[index];
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(22.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 90,
+                  height: 90,
+                  margin: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(restaurant.imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Text(
+                  restaurant.name,
+                  style: const TextStyle(
+                    fontFamily: 'Bentonsans_Bold',
+                    fontSize: 16.0,
+                    color: Color(0xFF22242E),
+                  ),
+                ),
+                const SizedBox(height: 4.0),
+                Text(
+                  '${restaurant.deliveryTime} Mins',
+                  style: const TextStyle(
+                    fontFamily: 'Bentonsans_Book',
+                    fontSize: 13.0,
+                    color: Color(0xFF22242E),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+Widget popularMenu() {
+  return StreamBuilder(
+    stream: FirebaseFirestore.instance.collection('menus').snapshots(),
+    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      if (snapshot.hasError) {
+        return const Text('Something went wrong');
+      }
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const CircularProgressIndicator();
+      }
+
+      final List<Menu> menus = snapshot.data!.docs.map(
+        (doc) {
+          return Menu.fromFirestore(doc);
+        },
+      ).toList();
+
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: menus.length,
+        itemBuilder: (context, index) {
+          final menu = menus[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Container(
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    margin: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      image: DecorationImage(
+                        image: NetworkImage(menu.imageUrl),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            menu.name,
+                            style: const TextStyle(
+                              fontFamily: 'Bentonsans_Bold',
+                              fontSize: 16.0,
+                              color: Color(0xFF22242E),
+                            ),
+                          ),
+                          Text(
+                            menu.restaurant,
+                            style: const TextStyle(
+                              fontFamily: 'Bentonsans_Book',
+                              fontSize: 13.0,
+                              color: Color(0xFFB6B7B7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: Text(
+                      '\$${menu.price}',
+                      style: const TextStyle(
+                        fontFamily: 'Bentonsans_Bold',
+                        fontSize: 16.0,
+                        color: Color(0xFF6B50F6),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       );
     },
   );

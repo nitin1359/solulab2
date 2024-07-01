@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:solulab2/detail%20screen/explore_restaurant.dart';
 import 'package:solulab2/utils/commonwidget.dart';
 
 class Homepage extends StatelessWidget {
@@ -54,12 +56,17 @@ class Homepage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        assign2TextField(
-                            text: 'Nearest Restaurant',
-                            fontFamily: 'Bentonsans_Bold',
-                            fontSize: 15.0),
+                        SizedBox(
+                          height: 20,
+                          child: assign2TextField(
+                              text: 'Nearest Restaurant',
+                              fontFamily: 'Bentonsans_Bold',
+                              fontSize: 15.0),
+                        ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Get.to(ExploreRestaurant());
+                          },
                           child: Text(
                             "View More",
                             style: TextStyle(
@@ -73,11 +80,33 @@ class Homepage extends StatelessWidget {
                     SizedBox(height: 20.0),
                     nearestRestaurant(),
                     SizedBox(height: 20.0),
-                    assign2TextField(
-                        text: 'Popular Menu',
-                        fontFamily: 'Bentonsans_Bold',
-                        fontSize: 15.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 20,
+                          child: assign2TextField(
+                              text: 'Popular Menu',
+                              fontFamily: 'Bentonsans_Bold',
+                              fontSize: 15.0),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Get.to(ExploreRestaurant());
+                          },
+                          child: Text(
+                            "View More",
+                            style: TextStyle(
+                                color: Color(0xFF6B50F6),
+                                fontFamily: 'Bentonsans_Book',
+                                fontSize: 15.0),
+                          ),
+                        ),
+                      ],
+                    ),
                     SizedBox(height: 20.0),
+                    popularMenu(),
                   ],
                 ),
               ),

@@ -46,11 +46,15 @@ class ExploreRestaurant extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 20.0),
-                    assign2TextField(
-                        text: 'Popular Restaurant',
-                        fontFamily: 'Bentonsans_Bold',
-                        fontSize: 15.0),
+                    SizedBox(
+                      height: 20,
+                      child: assign2TextField(
+                          text: 'Popular Restaurant',
+                          fontFamily: 'Bentonsans_Bold',
+                          fontSize: 15.0),
+                    ),
                     SizedBox(height: 20.0),
+                    popularRestaurant(),
                   ],
                 ),
               ),
