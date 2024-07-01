@@ -33,7 +33,7 @@ class BottomNavBar extends StatelessWidget {
           iconSize: 24, // tab button icon size
           tabBackgroundColor: const Color(0xff6B50F6)
               .withOpacity(0.1), // selected tab background color
-          // padding: EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
           tabMargin: const EdgeInsets.symmetric(
               horizontal: 10.0), // navigation bar padding
           tabs: const [

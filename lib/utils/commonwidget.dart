@@ -101,9 +101,9 @@ Widget nearestRestaurant() {
           //  snapshot.data?.size ?? 0, - this is also same
           // for all list length we can use restaurants.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 1,
+            crossAxisCount: 2,
             mainAxisSpacing: 20,
-            crossAxisSpacing: 20.0,
+            crossAxisSpacing: 20,
             childAspectRatio: 147 / 184,
           ),
           itemBuilder: (context, index) {
