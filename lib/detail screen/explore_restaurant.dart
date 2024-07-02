@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:solulab2/services/restaurant.dart';
+import 'package:solulab2/utils/bottomnavbar.dart';
 import 'package:solulab2/utils/commonwidget.dart';
 
 class ExploreRestaurant extends StatelessWidget {
@@ -54,7 +57,29 @@ class ExploreRestaurant extends StatelessWidget {
                           fontSize: 15.0),
                     ),
                     SizedBox(height: 20.0),
-                    popularRestaurant(),
+                    StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('restaurants')
+                            .snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return const Text('Something went wrong');
+                          }
+
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          }
+
+                          List<Restaurant> restaurants =
+                              snapshot.data!.docs.map(
+                            (doc) {
+                              return Restaurant.fromFirestore(doc);
+                            },
+                          ).toList();
+                          return popularRestaurant(list: restaurants);
+                        }),
                   ],
                 ),
               ),

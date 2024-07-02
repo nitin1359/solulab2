@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:solulab2/detail%20screen/filter_screen.dart';
-import 'package:solulab2/services/menu.dart';
+import 'package:solulab2/services/popular_menu.dart';
 import 'package:solulab2/services/restaurant.dart';
 
 Widget assign2TextField({
@@ -153,76 +153,57 @@ Widget nearestRestaurant() {
   );
 }
 
-Widget popularRestaurant() {
-  return StreamBuilder(
-    stream: FirebaseFirestore.instance.collection('restaurants').snapshots(),
-    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      if (snapshot.hasError) {
-        return const Text('Something went wrong');
-      }
-
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const CircularProgressIndicator();
-      }
-
-      final List<Restaurant> restaurants = snapshot.data!.docs.map(
-        (doc) {
-          return Restaurant.fromFirestore(doc);
-        },
-      ).toList();
-
-      return GridView.builder(
-        shrinkWrap: true,
-        physics: const ClampingScrollPhysics(),
-        itemCount: snapshot.data?.size ?? 0,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 20,
-          crossAxisSpacing: 20,
+Widget popularRestaurant({List<Restaurant>? list}) {
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: const ClampingScrollPhysics(),
+    itemCount: list?.length ?? 0,
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      mainAxisSpacing: 20,
+      crossAxisSpacing: 20,
+    ),
+    itemBuilder: (context, index) {
+      final restaurant = list![index];
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22.0),
         ),
-        itemBuilder: (context, index) {
-          final restaurant = restaurants[index];
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(22.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 90,
+              height: 90,
+              margin: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(restaurant.imageUrl),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 90,
-                  height: 90,
-                  margin: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(restaurant.imageUrl),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Text(
-                  restaurant.name,
-                  style: const TextStyle(
-                    fontFamily: 'Bentonsans_Bold',
-                    fontSize: 16.0,
-                    color: Color(0xFF22242E),
-                  ),
-                ),
-                const SizedBox(height: 4.0),
-                Text(
-                  '${restaurant.deliveryTime} Mins',
-                  style: const TextStyle(
-                    fontFamily: 'Bentonsans_Book',
-                    fontSize: 13.0,
-                    color: Color(0xFF22242E),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-              ],
+            Text(
+              restaurant.name,
+              style: const TextStyle(
+                fontFamily: 'Bentonsans_Bold',
+                fontSize: 16.0,
+                color: Color(0xFF22242E),
+              ),
             ),
-          );
-        },
+            const SizedBox(height: 4.0),
+            Text(
+              '${restaurant.deliveryTime} Mins',
+              style: const TextStyle(
+                fontFamily: 'Bentonsans_Book',
+                fontSize: 13.0,
+                color: Color(0xFF22242E),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+          ],
+        ),
       );
     },
   );
@@ -230,7 +211,7 @@ Widget popularRestaurant() {
 
 Widget popularMenu() {
   return StreamBuilder(
-    stream: FirebaseFirestore.instance.collection('menus').snapshots(),
+    stream: FirebaseFirestore.instance.collection('popularmenu').snapshots(),
     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
       if (snapshot.hasError) {
         return const Text('Something went wrong');
@@ -240,9 +221,9 @@ Widget popularMenu() {
         return const CircularProgressIndicator();
       }
 
-      final List<Menu> menus = snapshot.data!.docs.map(
+      final List<PopularMenu> menus = snapshot.data!.docs.map(
         (doc) {
-          return Menu.fromFirestore(doc);
+          return PopularMenu.fromFirestore(doc);
         },
       ).toList();
 
@@ -255,7 +236,7 @@ Widget popularMenu() {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Container(
-              height: 80,
+              height: 87,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15.0),
@@ -263,8 +244,8 @@ Widget popularMenu() {
               child: Row(
                 children: [
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: 64,
+                    height: 64,
                     margin: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.0),
@@ -320,4 +301,41 @@ Widget popularMenu() {
       );
     },
   );
+}
+
+class CustomChip extends StatelessWidget {
+  final String text;
+
+  const CustomChip({
+    super.key,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minHeight: 44),
+      child: Chip(
+        backgroundColor: const Color(0xFFE5FFF0),
+        label: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Color(0xFF6B50F6),
+              fontFamily: 'Bentonsans Medium',
+              fontSize: 12,
+            ),
+          ),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          side: BorderSide(
+            color: Colors.transparent,
+            width: 0,
+          ),
+        ),
+      ),
+    );
+  }
 }

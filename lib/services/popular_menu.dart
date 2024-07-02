@@ -1,21 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Menu {
+class PopularMenu {
   final String name;
   final String imageUrl;
   final String restaurant;
   final int price;
 
-  Menu({
+  PopularMenu({
     required this.name,
     required this.imageUrl,
     required this.restaurant,
     required this.price,
   });
 
-  factory Menu.fromFirestore(DocumentSnapshot doc) {
+  factory PopularMenu.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data() as Map;
-    return Menu(
+    return PopularMenu(
       name: data['name'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       restaurant: data['restaurant'] ?? '',
